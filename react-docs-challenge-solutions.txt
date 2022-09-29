@@ -1,0 +1,264 @@
+NOTE:
+
+All previous challenges were simply enough that I did not care to paste my solutions in here.
+
+============================================================================================================
+
+PASSING-PROPS-TO-A-COMPONENT    CHALLENGE 1
+
+import { getImageUrl } from './utils.js';
+
+// Extracted component Profile
+function Profile({ name, imgID, profession, award, awardDescription, discovery }){
+  return (
+    <>
+      <h2>{name}</h2>
+      <img 
+        className="avatar"
+        src={getImageUrl(imgID)}
+        alt={name}
+        width={70}
+        height={70}
+      />
+      <ul>
+        <li>
+          <b>Profession: </b>
+          {profession}
+        </li>
+        <li>
+          <b>Awards: {award} </b>
+          {awardDescription}
+        </li>
+        <li>
+          <b>Discovererd: </b>
+          {discovery}
+        </li>
+      </ul>
+    </>
+  );
+}
+
+export default function Gallery() {
+  return (
+    <div>
+      <h1>Notable Scientists</h1>
+      <section className="profile">
+      <Profile 
+        name="Maria Skłodowska-Curie"
+        imgID="szV5sdG"
+        profession="physicist and chemist"
+        award="4"
+        awardDescription="(Nobel Prize in Physics, Nobel Prize in Chemistry, Davy Medal, Matteucci Medal)"
+        discovery="polonium (element)" />
+      </section>
+      <section className="profile">
+      <Profile 
+        name="Katsuko Saruhashi"
+        imgID="YfeOqp2"
+        profession="geochemist"
+        award="2"
+        awardDescription="(Miyake Prize for geochemistry, Tanaka Prize)"
+        discovery="a method for measuring carbon dioxide in seawater" />
+      </section>
+    </div>
+  );
+}
+
+============================================================================================================
+
+PASSING-PROPS-TO-A-COMPONENT    CHALLENGE 2
+
+import { getImageUrl } from './utils.js';
+
+function Avatar({ person, size }) {
+  // Evaluate image size
+  let imgSize = size < 90 ? 's' : 'b';
+  return (
+    <img
+      className="avatar"
+      src={getImageUrl(person, imgSize)}
+      alt={person.name}
+      width={size}
+      height={size}
+    />
+  );
+}
+
+export default function Profile() {
+  return (
+    <Avatar
+      size={40}a
+      person={{ 
+        name: 'Gregorio Y. Zara', 
+        imageId: '7vQD0fP'
+      }}
+    />
+  );
+}
+
+============================================================================================================
+
+PASSING-PROPS-TO-A-COMPONENT    CHALLENGE 3
+
+// Extraced as component Card
+function Card ({ children }) {
+  return (
+    <div className="card">
+      {children}
+    </div>
+  );
+}
+
+export default function Profile() {
+  return (
+    <div>
+      <Card>
+        <div className="card-content">
+          <h1>Photo</h1>
+          <img
+            className="avatar"
+            src="https://i.imgur.com/OKS67lhm.jpg"
+            alt="Aklilu Lemma"
+            width={70}
+            height={70}
+          />
+        </div>
+      </Card>
+      <Card>
+        <div className="card-content">
+          <h1>About</h1>
+          <p>Aklilu Lemma was a distinguished Ethiopian scientist who discovered a natural treatment to schistosomiasis.</p>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+
+============================================================================================================
+============================================================================================================
+
+CONDITIONAL-RENDERING    CHALLENGE 1
+
+function Item({ name, isPacked }) {
+  return (
+    <li className="item">
+      // Ternary operator is used
+      {name} {isPacked ? '✔' : '❌'}
+    </li>
+  );
+}
+
+export default function PackingList() {
+  return (
+    <section>
+      <h1>Sally Ride's Packing List</h1>
+      <ul>
+        <Item 
+          isPacked={true} 
+          name="Space suit" 
+        />
+        <Item 
+          isPacked={true} 
+          name="Helmet with a golden leaf" 
+        />
+        <Item 
+          isPacked={false} 
+          name="Photo of Tam" 
+        />
+      </ul>
+    </section>
+  );
+}
+
+============================================================================================================
+
+CONDITIONAL-RENDERING    CHALLENGE 2
+
+function Item({ name, importance }) {
+  return (
+    <li className="item">
+    // A JS variable is nested inside a litearl string inside the JS opening in JSX
+      {name} <i>{importance > 0 && `(Importance: ${importance})`}</i>
+    </li>
+  );
+}
+
+export default function PackingList() {
+  return (
+    <section>
+      <h1>Sally Ride's Packing List</h1>
+      <ul>
+        <Item 
+          importance={9} 
+          name="Space suit" 
+        />
+        <Item 
+          importance={0} 
+          name="Helmet with a golden leaf" 
+        />
+        <Item 
+          importance={6} 
+          name="Photo of Tam" 
+        />
+      </ul>
+    </section>
+  );
+}
+
+============================================================================================================
+
+CONDITIONAL-RENDERING    CHALLENGE 3
+
+function Info({ drinkDetails }) {
+  return (
+    <dl>
+      <dt>Part of plant</dt>
+      <dd>{drinkDetails.partOfPlant}</dd>
+      <dt>Caffeine content</dt>
+      <dd>{drinkDetails.caffeineContent}</dd>
+      <dt>Age</dt>
+      <dd>{drinkDetails.age}</dd>
+    </dl>
+  );
+}
+
+function Drink({ name }) {
+  let drink = {};
+  if (name === 'tea') {
+    drink.partOfPlant = 'leaf',
+    drink.caffeineContent = '15–70 mg/cup',
+    drink.age = '4,000+ years'
+  } else {
+    drink.partOfPlant = 'bean',
+    drink.caffeineContent = '80–185 mg/cup',
+    drink.age = '1,000+ years'
+  }
+  return (
+    <section>
+      <h1>{name}</h1>
+      <Info
+        drinkDetails = {drink} />
+    </section>
+  );
+}
+
+export default function DrinkList() {
+  return (
+    <div>
+      <Drink name="tea" />
+      <Drink name="coffee" />
+    </div>
+  );
+}
+
+
+// My solution includes some repetition, definitely still room to improve.
+//
+// Official solution uses object for each type of drinks, then nest them 
+// in an object containing all types of drinks. 
+
+============================================================================================================
+============================================================================================================
+
+

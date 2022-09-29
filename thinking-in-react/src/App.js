@@ -75,12 +75,13 @@ function ProductTable({ products, filterText, inStockOnly }) {
     rows.push(
       <ProductRow
       // Note: Object {product} is being passed into ProductRow
-      // as props. Once it's read by the main ProductRow function,
-      // the entire object (named 'product') is to be destructured
-      // and extracted into a new variable that goes by the exact
-      // name 'product', as hinted by destructurization syntax
+      // as props. Once read, this object will be destructured by
+      // having the 'product' property taken out of the object, then
+      // assigned to a new variable that goes by the exact
+      // name 'product', as hinted by destructuring syntax
       // { product }
-        product={product}
+        product={product} // Note this won't work if props' name is
+        // different than that of what's written in the destructuring syntax
         key={product.name} />
     );
     lastCategory = product.category;
