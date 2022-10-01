@@ -262,3 +262,440 @@ export default function DrinkList() {
 ============================================================================================================
 
 
+RENDERING-LISTS    CHALLENGE 1
+
+DATA
+
+export const people = [{
+  id: 0,
+  name: 'Creola Katherine Johnson',
+  profession: 'mathematician',
+  accomplishment: 'spaceflight calculations',
+  imageId: 'MK3eW3A'
+}, {
+  id: 1,
+  name: 'Mario José Molina-Pasquel Henríquez',
+  profession: 'chemist',
+  accomplishment: 'discovery of Arctic ozone hole',
+  imageId: 'mynHUSa'
+}, {
+  id: 2,
+  name: 'Mohammad Abdus Salam',
+  profession: 'physicist',
+  accomplishment: 'electromagnetism theory',
+  imageId: 'bE7W1ji'
+}, {
+  id: 3,
+  name: 'Percy Lavon Julian',
+  profession: 'chemist',
+  accomplishment: 'pioneering cortisone drugs, steroids and birth control pills',
+  imageId: 'IOjWm71'
+}, {
+  id: 4,
+  name: 'Subrahmanyan Chandrasekhar',
+  profession: 'astrophysicist',
+  accomplishment: 'white dwarf star mass calculations',
+  imageId: 'lrWQx8l'
+}];
+
+CODE
+
+import { people } from './data.js';
+import { getImageUrl } from './utils.js';
+
+export default function List() {
+  const chemists = people.filter(person => person.profession === 'chemist');
+  const scientists = people.filter(person => person.profession !== 'chemist');
+
+  const chemistListItems = chemists.map(chemist =>
+    <li key={chemist.id}>
+      <img
+        src={getImageUrl(chemist)}
+        alt={chemist.name}
+      />
+      <p>
+        <b>{chemist.name}:</b>
+        {' ' + chemist.profession + ' '}
+        known for {chemist.accomplishment}
+      </p>
+    </li>
+  );
+  const remainingListItems = scientists.map(scientist =>
+    <li key={scientist.id}>
+      <img
+        src={getImageUrl(scientist)}
+        alt={scientist.name}
+      />
+      <p>
+        <b>{scientist.name}:</b>
+        {' ' + scientist.profession + ' '}
+        known for {scientist.accomplishment}
+      </p>
+    </li>
+  );  
+  return (
+    <article>
+      <h1>Chemists</h1>
+      <ul>{chemistListItems}</ul>
+      <h1>Scientists</h1>
+      <ul>{remainingListItems}</ul>
+    </article>
+  );
+}
+
+
+NOTE: ABOVE WAS MY INITIAL SOLUTION, WHERE filter() WAS CALLED TWICE, CHECK THE 
+      OFFICIAL SOLUTION BELOW WHICH HAS LESS DUPLICATION
+
+import { people } from './data.js';
+import { getImageUrl } from './utils.js';
+
+let chemists = [];
+let everyoneElse = [];
+people.forEach(person => {
+  if (person.profession === 'chemist') {
+    chemists.push(person);
+  } else {
+    everyoneElse.push(person);
+  }
+});
+
+// Map provided people array, and generate <li> with each array element using .map()
+function CreateList({ title, people }) {
+  return (
+    <>
+      <h2>{title}</h2>
+      <ul>
+        {
+          // Here .map() is called without assignment, so a new array is created 
+          and immediately used rendered
+          people.map(person => {
+            <li key={person.id}>
+              <img
+                src={getImageUrl(person)}
+                alt={person.name}
+              />
+              <p>
+                <b>{person.name}:</b>
+                {' ' + person.profession + ' '}
+                known for {person.accomplishment}
+              </p>
+            </li>
+          })
+        }
+      </ul>
+    </>
+  );
+}
+
+export default function List() {
+  return (
+    <article>
+      <h1>Scientists</h1>
+      <ListSection
+        title="Chemists"
+        people={chemists}
+      />
+      <ListSection
+        title="Everyone Else"
+        people={everyoneElse}
+      />
+    </article>    
+  );
+}
+
+
+============================================================================================================
+
+
+RENDERING-LISTS    CHALLENGE 2
+
+DATA
+
+export const recipes = [{
+  id: 'greek-salad',
+  name: 'Greek Salad',
+  ingredients: ['tomatoes', 'cucumber', 'onion', 'olives', 'feta']
+}, {
+  id: 'hawaiian-pizza',
+  name: 'Hawaiian Pizza',
+  ingredients: ['pizza crust', 'pizza sauce', 'mozzarella', 'ham', 'pineapple']
+}, {
+  id: 'hummus',
+  name: 'Hummus',
+  ingredients: ['chickpeas', 'olive oil', 'garlic cloves', 'lemon', 'tahini']
+}];
+
+
+CODE
+
+import { recipes } from './data.js';
+
+// Two nested .map() calls
+function List({ recipes }){
+  return(
+    <>
+      {
+        recipes.map(recipe =>
+          <ul>
+            <li key={recipe.id}>
+              <h2>{recipe.name}</h2>
+              <ul>
+                {
+                  recipe.ingredients.map((ingredient, index) => 
+                    <li key={index}>{ingredient}</li>
+                  )
+                }
+              </ul>
+            </li>
+          </ul>
+        )
+      }
+    </>
+  );
+}
+
+export default function RecipeList() {
+  return (
+    <div>
+      <List
+      recipes={recipes} />
+    </div>
+  );
+}
+
+
+============================================================================================================
+
+
+RENDERING-LISTS    CHALLENGE 3
+
+import { recipes } from './data.js';
+
+function Recipe({ id, name, ingredients }) {
+  return (
+    <div>
+      <h2>{name}</h2>
+      <ul>
+        {ingredients.map(ingredient =>
+          <li key={ingredient}>
+            {ingredient}
+          </li>
+        )}
+      </ul>
+    </div>
+  );
+}
+
+export default function RecipeList() {
+  return (
+    <div>
+      <h1>Recipes</h1>
+      {recipes.map(recipe =>
+        <Recipe 
+        key={recipe.id}
+        id={recipe.id}
+        name={recipe.name}
+        ingredients={recipe.ingredients}
+        />
+      )}
+    </div>
+  );
+}
+
+
+============================================================================================================
+
+
+RENDERING-LISTS    CHALLENGE 4
+
+const poem = {
+  lines: [
+    'I write, erase, rewrite',
+    'Erase again, and then',
+    'A poppy blooms.'
+  ]
+};
+
+export default function Poem() {
+  return (
+    <article>
+      {poem.lines.map((line, index) =>
+      <>
+        <p key={index}>
+          {line}
+        </p>
+        {
+          (index != poem.lines.length - 1) && <hr />
+        }
+      </>
+      )}
+    </article>
+  );
+}
+
+
+============================================================================================================
+
+
+KEEPIGN-COMPONENTS-PURE    CHALLENGE 1
+
+export default function Clock({ time }) {
+  let hours = time.getHours();
+  return (
+    <>
+      {
+        if (hours >= 0 && hours <= 6) {
+          <h1 id="time" class="night">
+            {time.toLocaleTimeString()}
+          </h1>
+        } else {
+          <h1 id="time" class="day">
+            {time.toLocaleTimeString()}
+          </h1>
+        }
+      }
+    </>
+  );
+}
+
+export default function Clock({ time }) {
+  let hours = time.getHours();
+  return (
+    <>
+      {}
+    </>
+  );
+}
+
+
+NOTE: I WAS UNABLE TO SOLVE THIS CHALLENGE BECAUSE I DID NOT KNOW THAT:
+
+  (1) CONDITIONAL STATEMENTS (IF-ELSE, ETC) ARE **NOT** ALLOWED IN RETURN STATEMENTS 
+      (BUT TERNARY, && AND OTHER **EXPRESSIONS** ARE OK)
+  (2) CONDITIONALLY RENDERING CAN BE DONE BY SETTING `className` ATTRIBUTE, **NOT**
+      `class` BECAUSE IT IS A RESERVED KEYWORD
+
+
+I REFERRED TO THE FOLLOWING OFFICIAL SOLUTION.
+
+export default function Clock({ time }) {
+  let hours = time.getHours();
+  let className;
+  if (hours >= 0 && hours <= 6) {
+    className = 'night';
+  } else {
+    className = 'day';
+  }
+  return (
+    <h1 
+    id="time"
+    className={className}
+    >
+      {time.toLocaleTimeString()}
+    </h1>
+  );
+}
+
+
+============================================================================================================
+
+
+KEEPIGN-COMPONENTS-PURE    CHALLENGE 2
+
+Profile.js:
+
+import Panel from './Panel.js';
+import { getImageUrl } from './utils.js';
+
+export default function Profile({ person }) {
+  return (
+    <Panel>
+      <Header 
+      person={person}/>
+      <Avatar 
+      person={person}/>
+    </Panel>
+  )
+}
+
+function Header({ person }) {
+  return <h1>{person.name}</h1>;
+}
+
+function Avatar({ person }) {
+  return (
+    <img
+      className="avatar"
+      src={getImageUrl(person)}
+      alt={person.name}
+      width={50}
+      height={50}
+    />
+  );
+}
+
+App.js:
+
+import Profile from './Profile.js';
+
+export default function App() {
+  return (
+    <>
+      <Profile person={{
+        imageId: 'lrWQx8l',
+        name: 'Subrahmanyan Chandrasekhar',
+      }} />
+      <Profile person={{
+        imageId: 'MK3eW3A',
+        name: 'Creola Katherine Johnson',
+      }} />
+    </>
+  )
+}
+
+
+============================================================================================================
+
+
+KEEPIGN-COMPONENTS-PURE    CHALLENGE 3
+
+export default function StoryTray({ stories }) {
+  let story = {
+    id: 'create',
+    label: 'Create Story'
+  };
+
+  stories.push(story);
+
+  return (
+    <ul>
+      <li key={story.id}>
+        {story.label}
+      </li>
+    </ul>
+  );
+}
+
+NOTE: I ALSO FAILED TO COMPLETE THIS CHALLENGE BECUASE I COULD NOT UNDERSTAND THE PURPOSE OF .map(). AS
+      IT TURNED OUT, .map() IS USED TO DISPLAY ITEMS ALREADY STORED IN THE ARRAY. 
+
+I LEARNT:
+  (1) PROPS ARE NOT TO BE ALTERED. SO WHILE IT'S OKAY TO .map() AND DISPLAY ALREADY STORED ITEMS, TEMPLATE
+      ITEMS MUST NOT BE .push()'D INTO THE ARRAY, BUT RATHER RENDERED DIRECTLY.
+  (2) .slice() CAN BE USED TO DUPLICATE ARRAYS.
+
+OFFICAL SOLUTION:
+
+export default function StoryTray({ stories }) {
+  return (
+    <ul>
+      {stories.map(story => (
+        <li key={story.id}>
+          {story.label}
+        </li>
+      ))}
+      <li>Create Story</li>
+    </ul>
+  );
+}
