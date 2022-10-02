@@ -699,3 +699,247 @@ export default function StoryTray({ stories }) {
     </ul>
   );
 }
+
+
+============================================================================================================
+
+
+RESPONDING-TO-EVENTS    CHALLENGE 1
+
+export default function LightSwitch() {
+  function handleClick() {
+    let bodyStyle = document.body.style;
+    if (bodyStyle.backgroundColor === 'black') {
+      bodyStyle.backgroundColor = 'white';
+    } else {
+      bodyStyle.backgroundColor = 'black';
+    }
+  }
+
+  return (
+    <button onClick={handleClick}>
+      Toggle the lights
+    </button>
+  );
+}
+
+
+============================================================================================================
+
+
+RESPONDING-TO-EVENTS    CHALLENGE 2
+
+export default function ColorSwitch({
+  onChangeColor
+}) {
+  return (
+    <button onClick={e => {
+      e.stopPropagation();
+      onChangeColor();
+    }}>
+      Change color
+    </button>
+  );
+}
+
+
+============================================================================================================
+
+
+STATE-A-COMPONENTS-MEMORY    CHALLENGE 1
+
+App.js
+
+import { useState } from 'react';
+import { sculptureList } from './data.js';
+
+export default function Gallery() {
+  const [index, setIndex] = useState(0);
+  const [showMore, setShowMore] = useState(false);
+
+  //[ben, john, louis, nelson]
+  // 0, 1, 2, 3
+  // 4
+
+  let hasNext = index < sculptureList.length - 1;
+  let hasPrev = index > 0;
+
+  function handleNextClick() {
+    setIndex(index + 1);
+  }
+
+  function handlePrevClick() {
+    setIndex(index - 1);
+  }
+
+  function handleMoreClick() {
+    setShowMore(!showMore);
+  }
+
+  let sculpture = sculptureList[index];
+  return (
+    <>
+      <button 
+      onClick={handleNextClick}
+      disabled={!hasPrev}
+      >
+        Prev
+      </button>    
+      <button 
+      onClick={handleNextClick}
+      disabled={!hasNext}
+      >
+        Next
+      </button>
+      <h2>
+        <i>{sculpture.name} </i> 
+        by {sculpture.artist}
+      </h2>
+      <h3>  
+        ({index + 1} of {sculptureList.length})
+      </h3>
+      <button onClick={handleMoreClick}>
+        {showMore ? 'Hide' : 'Show'} details
+      </button>
+      {showMore && <p>{sculpture.description}</p>}
+      <img 
+        src={sculpture.url} 
+        alt={sculpture.alt}
+      />
+    </>
+  );
+}
+
+NOTE: I WASN'T ABLE OT COMPLETE THIS CHALLENGE WITHOUT LOOKING AT THE SOLUTION, BECAUSE:
+
+  (1) I DID NOT KNOW HOW TO DISABLE A BUTTON (I THOUGHT ABOUT `disabled` IS A STANDALONE
+      KEYWORD IN HTML <button> TAG, NOT THAT IT CAN BE USED AS BOOLEAN EXPRESSION)
+  (2) I DID NOT KNOW ABOUT THE ELEGANT WAY OF USING AN EXPRESSION TO INITIALIZE VARIABLES
+
+
+============================================================================================================
+
+
+STATE-A-COMPONENTS-MEMORY    CHALLENGE 2
+
+import { useState } from 'react';
+
+export default function Form() {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+
+  function handleFirstNameChange(e) {
+    setFirstName(e.target.value);
+  }
+
+  function handleLastNameChange(e) {
+    setLastName(e.target.value);
+  }
+
+  function handleReset() {
+    setFirstName('');
+    setLastName('');
+  }
+
+  return (
+    <form onSubmit={e => e.preventDefault()}>
+      <input
+        placeholder="First name"
+        value={firstName}
+        onChange={handleFirstNameChange}
+      />
+      <input
+        placeholder="Last name"
+        value={lastName}
+        onChange={handleLastNameChange}
+      />
+      <h1>Hi, {firstName} {lastName}</h1>
+      <button onClick={handleReset}>Reset</button>
+    </form>
+  );
+}
+
+
+============================================================================================================
+
+
+STATE-A-COMPONENTS-MEMORY    CHALLENGE 3
+
+import { useState } from 'react';
+
+export default function FeedbackForm() {
+  const [isSent, setIsSent] = useState(false);
+  const [message, setMessage] = useState('');
+
+  if (isSent) {
+    return <h1>Thank you!</h1>;
+  } else {
+    // eslint-disable-next-line
+    return (
+      <form onSubmit={e => {
+        e.preventDefault();
+        alert(`Sending: "${message}"`);
+        setIsSent(true);
+      }}>
+        <textarea
+          placeholder="Message"
+          value={message}
+          onChange={e => setMessage(e.target.value)}
+        />
+        <br />
+        <button type="submit">Send</button>
+      </form>
+    );
+  }
+}
+
+
+============================================================================================================
+
+
+STATE-A-COMPONENTS-MEMORY    CHALLENGE 4
+
+export default function FeedbackForm() {
+
+  function handleClick() {
+    let name = prompt('What is your name?');
+    alert(`Hello, ${name}!`);
+  }
+
+  return (
+    <button onClick={handleClick}>
+      Greet
+    </button>
+  );
+}
+
+
+============================================================================================================
+
+
+STATE-AS-A-SNAPSHOT    CHALLENGE 1
+
+import { useState } from 'react';
+
+export default function TrafficLight() {
+  const [walk, setWalk] = useState(true);
+
+  function handleClick() {
+    const alertText = walk ? 'Stop is next' : 'Walk is next';
+    setWalk(!walk);
+    alert(alertText);
+  }
+
+  return (
+    <>
+      <button onClick={handleClick}>
+        Change to {walk ? 'Stop' : 'Walk'}
+      </button>
+      <h1 style={{
+        color: walk ? 'darkgreen' : 'darkred'
+      }}>
+        {walk ? 'Walk' : 'Stop'}
+      </h1>
+    </>
+  );
+}
