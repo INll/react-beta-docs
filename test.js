@@ -1,24 +1,14 @@
-import { useState } from 'react';
-
-export default function TrafficLight() {
-  const [walk, setWalk] = useState(true);
-
-  function handleClick() {
-    const alertText = walk ? 'Stop is next' : 'Walk is next';
-    setWalk(!walk);
-    alert(alertText);
+export function getFinalState(baseState, queue) {
+  let finalState = baseState;
+  
+  for (let update of queue) {
+    if (typeof update === 'function'){
+      finalState = update(finalState);
+    }
+    else {
+      finalState = update;
+    }
   }
 
-  return (
-    <>
-      <button onClick={handleClick}>
-        Change to {walk ? 'Stop' : 'Walk'}
-      </button>
-      <h1 style={{
-        color: walk ? 'darkgreen' : 'darkred'
-      }}>
-        {walk ? 'Walk' : 'Stop'}
-      </h1>
-    </>
-  );
+  return finalState;
 }
