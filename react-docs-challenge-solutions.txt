@@ -1677,3 +1677,160 @@ export default function TaskApp() {
     </>
   );
 }
+
+
+============================================================================================================
+
+
+REACTING-TO-INPUT-WITH-STATE    CHALLENGE 1
+
+import { useState } from 'react';
+
+export default function Picture() {
+  const [isBackgroundActive, setIsBackgroundActive] = useState(true);
+  const [isPictureActive, setIsPictureActive] = useState(false);
+
+  function handleBackgroundClick() {
+    setIsBackgroundActive(!isBackgroundActive);
+  }
+
+  function handlePictureClick() {
+    setIsBackgroundActive(!isBackgroundActive);
+  }
+
+  return (
+    <div 
+      className={isBackgroundActive ? "background background--active" : 
+        "background"}
+      onClick={e => {
+        e.stopPropagation();
+        handleBackgroundClick;   <--- YOU NEED AN ARROW FUNCTION FOR THIS!!
+      }}
+    >
+      <img
+        className={isPictureActive ? "picture picture--active" : 
+          "picture"}
+        alt="Rainbow houses in Kampung Pelangi, Indonesia"
+        src="https://i.imgur.com/5qwVYb1.jpeg"
+        onClick={e => {
+          handlePictureClick;    <--- YOU NEED AN ARROW FUNCTION FOR THIS!!
+        }}
+      />
+    </div>
+  );
+}
+
+** I FAILED TO COMPLETE THIS. INSTEAD OF TRYING TO FIGURE OUT A WAY TO
+   MANUIALLY SET CLASSES, I SHOULD AIM TO DYNAMICALLY GENERATE CLASS
+   VARIABLES, **THEN PASS THOSE CLASS VARIABLES INTO `className`**.
+
+   ALSO, WHEN PASSING SETTER FUNCTIONS IN onClick, I NEED TO USE AN ARROW
+   FUNCITON.
+
+   AND, I DON'T NEED TO WORRY ABOUT 'RESETTING' BECAUSE IF I DEFINED 
+   className VARIABLES RIGHT AFTER CALLING useState HOOK, THEN EACH TIME
+   SETTING FUNCTION IS CALLED, classNames GET REDEFINED (RESET TO DEFAULT).
+
+   THE FOLLOWING IS AN ADAPTED SOLUTION
+
+import { useState } from 'react';
+
+export default function Picture() {
+  const [isActive, setIsActive] = useState(false);
+
+  let divClassName = 'background';
+  let imgClassName = 'picture';
+  
+  if (isActive) {
+    divClassName += ' background--active';
+  } else {
+    imgClassName += ' picture--active'
+  }
+
+  return (
+    <div 
+      className={divClassName}
+      onClick={() => setIsActive(false)}
+    >
+      <img
+        className={imgClassName}
+        onClick={e => {
+          e.stopPropagation();
+          setIsActive(true);
+        }}
+        alt="Rainbow houses in Kampung Pelangi, Indonesia"
+        src="https://i.imgur.com/5qwVYb1.jpeg"
+      />
+    </div>
+  );
+}
+
+
+============================================================================================================
+
+
+REACTING-TO-INPUT-WITH-STATE    CHALLENGE 2
+
+import { useState } from 'react';
+
+export default function EditProfile() {
+  const [isEditing, setIsEditing] = useState(false);
+  const [firstNameInput, setFirstNameInput] = useState('');
+  const [lastNameInput, setLastNameInput] = useState('');
+
+
+  function handleChangeModes(e) {
+    e.preventDefault();
+    setIsEditing(!isEditing);
+  }
+
+  function handleFirstNameInput(e) {
+    setFirstNameInput(e.target.value);
+  }
+
+  function handleLastNameInput(e) {
+    setLastNameInput(e.target.value);
+  }
+
+  return (
+    <form
+      onSubmit={handleChangeModes}
+    >
+      <label>
+        First name:{' '}
+        {isEditing ? 
+          <input
+            onChange={handleFirstNameInput}
+            value={firstNameInput}
+          /> : 
+          <b>{firstNameInput}</b>
+        }
+      </label>
+      <label>
+        Last name:{' '}
+        {isEditing ? 
+          <input
+            onChange={handleLastNameInput}
+            value={lastNameInput}
+          /> : 
+          <b>{lastNameInput}</b>
+        }
+      </label>
+      <button 
+      type="submit">
+        {isEditing ? 'Save Profile' : 'Edit Profile'}
+      </button>
+      <p><i>Hello, {`${firstNameInput} ${lastNameInput}`}!</i></p>
+    </form>
+  );
+}
+
+** NOTE THAT EVENTHANDLER LOGICS CAN BE MADE CONCISE BY PACKING THE LOGIC:
+   onChange={(e) => {handleFirstNameInput(e.target.value)}}
+
+   
+============================================================================================================
+
+
+CHOOSING-THE-STATE-STRUCTURE    CHALLENGE 1
+
