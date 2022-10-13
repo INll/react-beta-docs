@@ -1834,3 +1834,297 @@ export default function EditProfile() {
 
 CHOOSING-THE-STATE-STRUCTURE    CHALLENGE 1
 
+import { useState } from 'react';
+
+export default function Clock(props) {
+  return (
+    <h1 style={{ color: props.color }}>
+      {props.time}
+    </h1>
+  );
+}
+
+
+============================================================================================================
+
+
+CHOOSING-THE-STATE-STRUCTURE    CHALLENGE 2
+
+import { useState } from 'react';
+import AddItem from './AddItem.js';
+import PackingList from './PackingList.js';
+
+let nextId = 3;
+const initialItems = [
+  { id: 0, title: 'Warm socks', packed: true },
+  { id: 1, title: 'Travel journal', packed: false },
+  { id: 2, title: 'Watercolors', packed: false },
+];
+
+export default function TravelPlan() {
+  const [items, setItems] = useState(initialItems);
+
+  const total = items.length;
+  const packed = items
+    .filter(item => item.packed)
+    .length
+
+  function handleAddItem(title) {
+    setItems([
+      ...items,
+      {
+        id: nextId++,
+        title: title,
+        packed: false
+      }
+    ]);
+  }
+
+  function handleChangeItem(nextItem) {
+    setItems(items.map(item => {
+      if (item.id === nextItem.id) {
+        return nextItem;
+      } else {
+        return item;
+      }
+    }));
+  }
+
+  function handleDeleteItem(itemId) {
+    setItems(
+      items.filter(item => item.id !== itemId)
+    );
+  }
+
+  return (
+    <>  
+      <AddItem
+        onAddItem={handleAddItem}
+      />
+      <PackingList
+        items={items}
+        onChangeItem={handleChangeItem}
+        onDeleteItem={handleDeleteItem}
+      />
+      <hr />
+      <b>{packed} out of {total} packed!</b>
+    </>
+  );
+}
+
+
+** I COULDN'T COMPLETE THIS BECAUSE I FAILED TO RECOGNIZE REDUNDANCY IN
+   STATES AND THE APPROACH TO USING .filter().length TO COUNT NUMBER OF 
+   TRUES IN AN OBJECT.
+
+
+============================================================================================================
+
+
+CHOOSING-THE-STATE-STRUCTURE    CHALLENGE 3
+
+import { useState } from 'react';
+import { initialLetters } from './data.js';
+import Letter from './Letter.js';
+
+export default function MailClient() {
+  const [letters, setLetters] = useState(initialLetters);
+  const [highlightedLetter, setHighlightedLetter] = useState(null);
+
+  function handleHover(letter) {
+    setHighlightedLetter(letter);
+  }
+
+  function handleStar(starred) {
+    setLetters(letters.map(letter => {
+      if (letter.id === starred.id) {
+        return {
+          ...letter,
+          isStarred: !letter.isStarred
+        };
+      } else {
+        return letter;
+      }
+    }));
+  }
+
+  return (
+    <>
+      <h2>Inbox</h2>
+      <ul>
+        {letters.map(letter => (
+          <Letter
+            key={letter.id}
+            letter={letter}
+            isHighlighted={
+              letter === highlightedLetter
+            }
+            onHover={handleHover}
+            onToggleStar={handleStar}
+          />
+        ))}
+      </ul>
+    </>
+  );
+}
+
+**SPENT MORE TIME THAN EXPECTED BUT IT'S GOOD EXPERIENCE TO LEARN DUPLICATION
+
+============================================================================================================
+
+
+CHOOSING-THE-STATE-STRUCTURE    CHALLENGE 4
+
+** I GOT STUCK HERE BUT THE SOLUTION IS EASIER THAN I THOUGHT. GUESS I'LL
+   JUST HAVE TO MEMORIZE THIS
+   
+
+import { useState } from 'react';
+import { letters } from './data.js';
+import Letter from './Letter.js';
+
+export default function MailClient() {
+  const [selectedId, setSelectedId] = useState([]);
+
+  // TODO: allow multiple selection
+  const selectedCount = selectedId.length;
+
+  function handleToggle(toggledId) {
+    // TODO: allow multiple selection
+    if (selectedId.includes(toggledId)) {
+      setSelectedId(selectedId.filter(id =>
+        id !== toggledId
+      ));
+    } else {
+      setSelectedId([
+        ...selectedId,
+        toggledId
+      ]);
+    }
+  }
+
+  return (
+    <>
+      <h2>Inbox</h2>
+      <ul>
+        {letters.map(letter => (
+          <Letter
+            key={letter.id}
+            letter={letter}
+            isSelected={
+              // TODO: allow multiple selection
+              selectedId.includes(letter.id)
+            }
+            onToggle={handleToggle}
+          />
+        ))}
+        <hr />
+        <p>
+          <b>
+            You selected {selectedCount} letters
+          </b>
+        </p>
+      </ul>
+    </>
+  );
+}
+
+
+============================================================================================================
+
+
+SHARING-STATE-BETWEEN-COMPONENTS    CHALLENGE 1
+
+import { useState } from 'react';
+
+export default function SyncedInputs() {
+  const [textInput, setTextInput] = useState('');
+  
+  return (
+    <>
+      <Input 
+        label="First input" 
+        onInput={(e) =>setTextInput(e.target.value)}
+        displayText={textInput}
+      />
+      <Input 
+        label="Second input" 
+        onInput={(e) =>setTextInput(e.target.value)}
+        displayText={textInput}
+      />
+    </>
+  );
+}
+
+function Input({ label, onInput, displayText }) {
+  return (
+    <label>
+      {label}
+      {' '}
+      <input
+        value={displayText}
+        onChange={onInput}
+      />
+    </label>
+  );
+}
+
+
+============================================================================================================
+
+
+SHARING-STATE-BETWEEN-COMPONENTS    CHALLENGE 2
+
+import { useState } from 'react';
+import { foods, filterItems } from './data.js';
+
+export default function FilterableList() {
+  const [query, setQuery] = useState('');
+
+  function handleInput(e){
+    setQuery(e.target.value);
+  }
+
+  return (
+    <>
+      <SearchBar 
+        onChange={handleInput}
+        value={query}
+      />
+      <hr />
+      <List 
+        items={foods} 
+        query={query}
+      />
+    </>
+  );
+}
+
+function SearchBar({ onChange, value }) {
+  return (
+    <label>
+      Search:{' '}
+      <input
+        value={value}
+        onChange={onChange}
+      />
+    </label>
+  );
+}
+
+function List({ items, query }) {
+  return (
+    <table>
+      <tbody>
+        {
+          filterItems(items, query).map(item => (
+            <tr key={item.id}>
+              <td>{item.name}</td>
+              <td>{item.description}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  );
+}
