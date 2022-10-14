@@ -2128,3 +2128,290 @@ function List({ items, query }) {
     </table>
   );
 }
+
+
+============================================================================================================
+
+
+PRESERVING-AND-RESETTING-STATE    CHALLENGE 1
+
+import { useState } from 'react';
+
+export default function App() {
+  const [showHint, setShowHint] = useState(false);
+  return (
+    <div>
+    // This conditional clause is always the first element that react sees, hence always before 
+    // the <Form />, regardless of whether it's true or false.
+    // Thus <Form /> preserves its state.
+      {showHint && 
+        <p><i>Hint: Your favorite city?</i></p>
+      }
+      <Form />
+      // Note the use of brackets to include multiple lines of JSX
+      {showHint ? (
+        <button onClick={() => {
+          setShowHint(false);
+        }}>Hide hint</button>
+      ) : (
+        <button onClick={() => {
+          setShowHint(true);
+        }}>Show hint</button>
+      )
+      }
+    </div>
+  );
+}
+
+function Form() {
+  const [text, setText] = useState('');
+  return (
+    <textarea
+      value={text}
+      onChange={e => setText(e.target.value)}
+    />
+  );
+}
+
+
+============================================================================================================
+
+
+PRESERVING-AND-RESETTING-STATE    CHALLENGE 2
+
+import { useState } from 'react';
+
+export default function App() {
+  const [reverse, setReverse] = useState(false);
+  let checkbox = (
+    <label>
+      <input
+        type="checkbox"
+        checked={reverse}
+        onChange={e => setReverse(e.target.checked)}
+      />
+      Reverse order
+    </label>
+  );
+  if (reverse) {
+    return (
+      <>
+        <Field label="Last name" /> 
+        <Field label="First name" />
+        {checkbox}
+      </>
+    );
+  } else {
+    return (
+      <>
+        <Field label="First name" /> 
+        <Field label="Last name" />
+        {checkbox}
+      </>
+    );    
+  }
+}
+
+function Field({ label }) {
+  const [text, setText] = useState('');
+  return (
+    <label>
+      {label}:{' '}
+      <input
+        type="text"
+        value={text}
+        placeholder={label}
+        onChange={e => setText(e.target.value)}
+      />
+    </label>
+  );
+}
+
+
+============================================================================================================
+
+
+PRESERVING-AND-RESETTING-STATE    CHALLENGE 3
+
+** Skiping solution because the gist of it is to add a key attribute to an element so that each time
+   there is an update the entire component is recreated from scratch
+
+
+============================================================================================================
+
+
+PRESERVING-AND-RESETTING-STATE    CHALLENGE 4
+
+** Also skippnig this one. All it needed to be done was to add a key attribute also so that each time 
+   a new image is loaded the component is immeidately reset.
+
+
+============================================================================================================
+
+
+PRESERVING-AND-RESETTING-STATE    CHALLENGE 5
+
+** Really good challenge
+
+import { useState } from 'react';
+import Contact from './Contact.js';
+
+export default function ContactList() {
+  const [reverse, setReverse] = useState(false);
+
+  const displayedContacts = [...contacts];
+  if (reverse) {
+    displayedContacts.reverse();
+  }
+
+  return (
+    <>
+      <label>
+        <input
+          type="checkbox"
+          value={reverse}
+          onChange={e => {
+            setReverse(e.target.checked)
+          }}
+        />{' '}
+        Show in reverse order
+      </label>
+      <ul>
+        {displayedContacts.map((contact, i) =>
+          <li key={contact.id}>  <--- Used to be i (index pos)
+            <Contact contact={contact} />
+          </li>
+        )}
+      </ul>
+    </>
+  );
+}
+
+** Without any keys:
+   Considers only position in tree. If rendering order/tag is changed then component is
+   re-created.
+
+   Using 'i':
+   State now follows index positions, even if the content (contact) is changed.
+
+   Using 'contact.id':
+   State now follows each contact, instead of blindly applying to a certain index position.
+
+const contacts = [
+  { id: 0, name: 'Alice', email: 'alice@mail.com' },
+  { id: 1, name: 'Bob', email: 'bob@mail.com' },
+  { id: 2, name: 'Taylor', email: 'taylor@mail.com' }
+];
+
+
+============================================================================================================
+
+
+EXTRACTING-STATE-LOGIC-INTO-A-REDUCER    CHALLENGE 1
+
+export default function ContactList({contacts, selectedId, dispatch}) {
+  return (
+    <section className="contact-list">
+      <ul>
+        {contacts.map((contact) => (
+          <li key={contact.id}>
+            <button
+              onClick={() => {
+                dispatch({
+                  type: 'changed_selection',
+                  contactId: contact.id,  <--- contactId, as written in reducer function
+                });
+              }}>
+              {selectedId === contact.id ? <b>{contact.name}</b> : contact.name}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+export default function ContactList({contacts, selectedId, dispatch}) {
+  return (
+    <section className="contact-list">
+      <ul>
+        {contacts.map((contact) => (
+          <li key={contact.id}>
+            <button
+              onClick={() => {
+                dispatch({
+                  type: 'changed_selection',
+                  contactId: contact.id,
+                });
+              }}>
+              {selectedId === contact.id ? <b>{contact.name}</b> : contact.name}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+
+============================================================================================================
+
+
+EXTRACTING-STATE-LOGIC-INTO-A-REDUCER    CHALLENGE 3
+
+Good challenge!
+
+import {useReducer} from 'react';
+import Chat from './Chat.js';
+import ContactList from './ContactList.js';
+import {initialState, messengerReducer} from './messengerReducer';
+
+export default function Messenger() {
+  const [state, dispatch] = useReducer(messengerReducer, initialState);
+  const message = state.messages[state.selectedId];   <--- so that input field dones't get reset
+  const contact = contacts.find((c) => c.id === state.selectedId);
+  return (
+    <div>
+      <ContactList
+        contacts={contacts}
+        selectedId={state.selectedId}
+        dispatch={dispatch}
+      />
+      <Chat
+        key={contact.id}
+        message={message}
+        contact={contact}
+        dispatch={dispatch}
+      />
+    </div>
+  );
+}
+
+const contacts = [
+  {id: 0, name: 'Taylor', email: 'taylor@mail.com'},
+  {id: 1, name: 'Alice', email: 'alice@mail.com'},
+  {id: 2, name: 'Bob', email: 'bob@mail.com'},
+];
+
+
+export default function ContactList({contacts, selectedId, dispatch}) {
+  return (
+    <section className="contact-list">
+      <ul>
+        {contacts.map((contact) => (
+          <li key={contact.id}>
+            <button
+              onClick={() => {
+                dispatch({
+                  type: 'changed_selection',
+                  contactId: contact.id,
+                });
+              }}>
+              {selectedId === contact.id ? <b>{contact.name}</b> : contact.name}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
